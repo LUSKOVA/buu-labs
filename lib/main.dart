@@ -11,14 +11,66 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
+      home: MainScreen(),
+    );
+  }
+}
+
+// ================= Главное с BottomNavigationBar =================
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _screens = const [
+    HomeScreen(),
+    DetailsScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _screens[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list),
+            label: 'Задачи',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.info),
+            label: 'Детали',
+          ),
+        ],
+      ),
     );
   }
 }
 
 // ================= Главный экран =================
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final TextEditingController _controller = TextEditingController();
+  final List<Task> _tasks = [];
 
   @override
   Widget build(BuildContext context) {
@@ -30,9 +82,10 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: TextField(
-                    decoration: InputDecoration(
+                    controller: _controller,
+                    decoration: const InputDecoration(
                       hintText: 'Введите задачу...',
                       border: OutlineInputBorder(),
                     ),
@@ -40,47 +93,64 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
-                  onPressed: null, // пока без логики
+                  onPressed: () {
+                    if (_controller.text.isNotEmpty) {
+                      setState(() {
+                        _tasks.add(Task(_controller.text));
+                        _controller.clear();
+                      });
+                    }
+                  },
                   child: const Text('+'),
                 ),
               ],
             ),
           ),
           Expanded(
-            child: ListView(
-              children: [
-                ListTile(
-                  leading: const Checkbox(value: false, onChanged: null),
-                  title: const Text('Купить молоко'),
+            child: ListView.builder(
+              itemCount: _tasks.length,
+              itemBuilder: (context, index) {
+                final task = _tasks[index];
+                return ListTile(
+                  leading: Checkbox(
+                    value: task.done,
+                    onChanged: (value) {
+                      setState(() {
+                        task.done = value!;
+                      });
+                    },
+                  ),
+                  title: Text(
+                    task.title,
+                    style: TextStyle(
+                      decoration: task.done
+                          ? TextDecoration.lineThrough
+                          : TextDecoration.none,
+                    ),
+                  ),
                   trailing: IconButton(
                     icon: const Icon(Icons.close),
-                    onPressed: null,
+                    onPressed: () {
+                      setState(() {
+                        _tasks.removeAt(index);
+                      });
+                    },
                   ),
-                ),
-                ListTile(
-                  leading: const Checkbox(value: false, onChanged: null),
-                  title: const Text('Сделать ЛР'),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: null,
-                  ),
-                ),
-                ListTile(
-                  leading: const Checkbox(value: true, onChanged: null),
-                  title: const Text('Погулять с собакой'),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: null,
-                  ),
-                ),
-              ],
+                );
+              },
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
               onPressed: () {
-                // На данном этапе навигация не требуется
+                // Пример Navigator.push для открытия деталей
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const DetailsScreen(),
+                  ),
+                );
               },
               child: const Text('Перейти к деталям'),
             ),
@@ -99,23 +169,21 @@ class DetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Детали / Информация')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Text(
-              '"Цитата загружается..."',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: null, // Пока без логики
-              child: Text('Назад'),
-            ),
-          ],
+      body: const Center(
+        child: Text(
+          '"Цитата загружается..."',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 18),
         ),
       ),
     );
   }
+}
+
+// ================= Класс задачи =================
+class Task {
+  String title;
+  bool done;
+
+  Task(this.title, {this.done = false});
 }
