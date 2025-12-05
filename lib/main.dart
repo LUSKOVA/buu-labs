@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+=======
+>>>>>>> 00e29f93416e8a4acd2399c88c26c1310aa79a81
 
 void main() {
   runApp(const MainApp());
@@ -12,12 +15,18 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.pink,
       ),
       home: const MainScreen(),
+=======
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: MainScreen(),
+>>>>>>> 00e29f93416e8a4acd2399c88c26c1310aa79a81
     );
   }
 }
@@ -51,7 +60,10 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
+<<<<<<< HEAD
         selectedItemColor: Colors.pink,
+=======
+>>>>>>> 00e29f93416e8a4acd2399c88c26c1310aa79a81
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.list),
@@ -80,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Task> _tasks = [];
 
   @override
+<<<<<<< HEAD
   void initState() {
     super.initState();
     _loadTasks();
@@ -204,12 +217,98 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
+=======
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('BUU — Мои задачи')),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    decoration: const InputDecoration(
+                      hintText: 'Введите задачу...',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_controller.text.isNotEmpty) {
+                      setState(() {
+                        _tasks.add(Task(_controller.text));
+                        _controller.clear();
+                      });
+                    }
+                  },
+                  child: const Text('+'),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _tasks.length,
+              itemBuilder: (context, index) {
+                final task = _tasks[index];
+                return ListTile(
+                  leading: Checkbox(
+                    value: task.done,
+                    onChanged: (value) {
+                      setState(() {
+                        task.done = value!;
+                      });
+                    },
+                  ),
+                  title: Text(
+                    task.title,
+                    style: TextStyle(
+                      decoration: task.done
+                          ? TextDecoration.lineThrough
+                          : TextDecoration.none,
+                    ),
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () {
+                      setState(() {
+                        _tasks.removeAt(index);
+                      });
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+              onPressed: () {
+                // Пример Navigator.push для открытия деталей
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const DetailsScreen(),
+                  ),
+                );
+              },
+              child: const Text('Перейти к деталям'),
+            ),
+          ),
+        ],
+>>>>>>> 00e29f93416e8a4acd2399c88c26c1310aa79a81
       ),
     );
   }
 }
 
 // ================= Экран деталей =================
+<<<<<<< HEAD
 class DetailsScreen extends StatefulWidget {
   const DetailsScreen({super.key});
 
@@ -318,6 +417,22 @@ class _DetailsScreenState extends State<DetailsScreen> {
         child: const Icon(Icons.refresh),
         tooltip: 'Новая цитата',
       ),
+=======
+class DetailsScreen extends StatelessWidget {
+  const DetailsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Детали / Информация')),
+      body: const Center(
+        child: Text(
+          '"Цитата загружается..."',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 18),
+        ),
+      ),
+>>>>>>> 00e29f93416e8a4acd2399c88c26c1310aa79a81
     );
   }
 }
@@ -328,6 +443,7 @@ class Task {
   bool done;
 
   Task(this.title, {this.done = false});
+<<<<<<< HEAD
 
   Map<String, dynamic> toJson() => {
         'title': title,
@@ -336,4 +452,6 @@ class Task {
 
   factory Task.fromJson(Map<String, dynamic> json) =>
       Task(json['title'], done: json['done']);
+=======
+>>>>>>> 00e29f93416e8a4acd2399c88c26c1310aa79a81
 }
